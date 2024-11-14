@@ -1,7 +1,17 @@
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 
 app = FastAPI()
+
+# Permitir solicitudes desde cualquier origen (o personalizar según sea necesario)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Puedes reemplazar "*" por los orígenes específicos que quieras permitir
+    allow_credentials=True,
+    allow_methods=["*"],  # Puedes restringir los métodos que deseas permitir
+    allow_headers=["*"],  # Puedes especificar qué encabezados permitir
+)
 
 class ConnectionManager:
     def __init__(self):
@@ -51,5 +61,6 @@ async def websocket_endpoint(websocket: WebSocket, username: str):
     except WebSocketDisconnect:
         manager.disconnect(websocket)
         await manager.broadcast_user_list()
+
 
 #python -m uvicorn main:app --reload
